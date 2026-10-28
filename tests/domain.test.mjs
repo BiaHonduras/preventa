@@ -1,0 +1,13 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {normalizeInvoices,mergeInvoices,mondayOf,weeklyDeadline,minutes,suggestOrder} from '../domain.mjs';
+const nc={Hoja:'FACTURAS_NC',NumDoc:'00000201-00645562',Comentario:'Contado',ClienteNomb:'00123',NomCliente:'Cliente ejemplo',ArtCodigo:'001',ArtDescrip:'Producto',Cantidad:2,Sucursal:'LA CEIBA',RUTA_NUM:'Ruta 1',FechaDoc:'2026-10-28'};
+test('Preserva ceros, código cliente y normaliza sede',()=>{const {invoices}=normalizeInvoices([nc]);assert.equal(invoices[0].number,nc.NumDoc);assert.equal(invoices[0].clientCode,'00123');assert.equal(invoices[0].clientName,'Cliente ejemplo');assert.equal(invoices[0].site,'CBA')});
+test('Excluye crédito, devolución, bonificación y ajuste',()=>{assert.equal(normalizeInvoices(['Crédito','Devolución','Bonificacion','Ajuste'].map(Comentario=>({...nc,Comentario}))).invoices.length,0)});
+test('Rechaza formato incorrecto y hoja desconocida',()=>{assert.equal(normalizeInvoices([{...nc,NumDoc:'123'},{...nc,Hoja:'OTRA'}]).invoices.length,0)});
+test('Cambio de hoja no duplica líneas, preserva SKU repetidos y cliente',()=>{const cont={...nc,Hoja:'FACTURAS_CONT',ClienteNomb:'Cliente ejemplo'};for(const rows of [[nc,nc,cont,cont],[cont,cont,nc,nc]]){const result=normalizeInvoices(rows).invoices;assert.equal(result.length,1);assert.equal(result[0].items.length,2);assert.equal(result[0].clientCode,'00123');assert.equal(result[0].accounted,true)}});
+test('Una sincronización posterior conserva código y contabilización',()=>{const before=normalizeInvoices([nc]).invoices;const after=normalizeInvoices([{...nc,Hoja:'FACTURAS_CONT',ClienteNomb:'Cliente ejemplo'}]).invoices;const merged=mergeInvoices(before,after);assert.equal(merged.length,1);assert.equal(merged[0].clientCode,'00123');assert.equal(merged[0].accounted,true);assert.equal(mergeInvoices(merged,before)[0].accounted,true)});
+test('Semana y viernes anterior son correctos incluso en domingo',()=>{assert.equal(mondayOf('2026-11-01'),'2026-10-26');assert.equal(mondayOf('2026-11-02'),'2026-11-02');assert.equal(weeklyDeadline('2026-11-02'),'2026-10-30')});
+test('Atención no produce duración negativa',()=>{assert.equal(minutes('2026-10-28T12:00:00Z','2026-10-28T12:18:00Z'),18);assert.equal(minutes('2026-10-28T12:18:00Z','2026-10-28T12:00:00Z'),0)});
+test('Orden por cercanía conserva pendientes sin ubicación al final',()=>{const clients=[{code:'A',location:{lat:15,lng:-88}},{code:'B',location:{lat:15,lng:-87.99}},{code:'C'}],visits=[{clientCode:'B',status:'pendiente'},{clientCode:'C',status:'pendiente'},{clientCode:'A',status:'pendiente'},{clientCode:'D',status:'exitoso'}];assert.deepEqual(suggestOrder(visits,clients,{lat:15,lng:-88}).map(x=>x.clientCode),['A','B','C'])});
+
