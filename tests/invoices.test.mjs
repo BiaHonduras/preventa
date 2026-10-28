@@ -1,0 +1,11 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {applySourceToState,filterDocuments} from '../invoices.mjs';
+const doc={number:'00000001-00000001',client_code:'00005',client_name:'Cliente de prueba',site:'SPS',source_route:'512',issue_date:'2026-10-28',accounted:false,items:[{sku:'0001',description:'Producto',quantity:2}],present_in_source:true};
+const customer={site:'SPS',code:'00005',name:'Cliente de prueba',source_route:'512'};
+const empty=()=>({clients:[],invoices:[],assignments:[],visits:[],journeys:[],audit:[]});
+test('La primera carga real retira los datos de demostración',()=>{const state=empty();state.visits=[{id:'demo'}];applySourceToState(state,[doc],[customer]);assert.deepEqual(state.visits,[]);assert.equal(state.invoices[0].clientCode,'SPS:00005');assert.equal(state.clients[0].sourceCode,'00005')});
+test('Una sincronización posterior conserva ubicación y programación',()=>{const state=empty();applySourceToState(state,[doc],[customer]);state.clients[0].location={lat:15,lng:-88};state.visits=[{id:'actual'}];applySourceToState(state,[{...doc,accounted:true}],[customer]);assert.deepEqual(state.clients[0].location,{lat:15,lng:-88});assert.equal(state.visits[0].id,'actual');assert.equal(state.invoices[0].accounted,true)});
+test('No vincula documentos sin código por coincidencia de nombre',()=>{const state=empty();applySourceToState(state,[{...doc,client_code:null}],[customer]);assert.equal(state.invoices[0].clientCode,null)});
+test('Facturas ausentes del último archivo se conservan como históricas',()=>{const state=empty();applySourceToState(state,[doc],[customer]);applySourceToState(state,[],[customer]);assert.equal(state.invoices.length,1);assert.equal(state.invoices[0].presentInSource,false)});
+test('Filtra búsquedas, sedes y rutas sin alterar los documentos',()=>{const docs=[doc,{...doc,number:'00000001-00000002',site:'TGU',source_route:'165'}];assert.equal(filterDocuments(docs,{query:'CLIENTE',site:'TGU',route:'165'}).length,1);assert.equal(filterDocuments(docs,{site:'SRC'}).length,0);assert.equal(docs.length,2)});
