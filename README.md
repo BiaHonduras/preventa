@@ -1,26 +1,21 @@
 # Preventa — Control de Entregas
 
-Demostración de una aplicación web para programar y registrar entregas. Incluye únicamente datos ficticios y almacenamiento local en el navegador.
+Módulo de entregas con acceso corporativo y catálogo compartido de rutas y motoristas.
 
-## Funciones de demostración
+## Acceso
 
-- Resumen diario por ruta y motorista.
-- Programación de visitas y asignación semanal de clientes.
-- Nombres editables para dos motoristas y tres rutas.
-- Inicio y cierre de jornada.
-- Ubicación bajo permiso del dispositivo, fotografía y tiempo de atención por visita.
-- Resultado exitoso o fallido con motivo.
-- Registro provisional de clientes y disposición de pedidos pendientes.
-- Orden sugerido por distancia en línea recta, sin tráfico ni cálculo vial.
+El inicio de sesión se realiza desde la Intranet. La cuenta operativa compartida ve únicamente este módulo. Los motoristas son registros del catálogo y se seleccionan al iniciar la jornada: no son cuentas de usuario.
 
-## Límites
+La administración de rutas y motoristas se muestra a Administrador, Coordinador y Jefatura, con validación de permisos en el servidor y alcance por sede. Permite crear, editar y desactivar; conserva auditoría de cambios. Una edición concurrente requiere actualizar el registro antes de volver a guardar.
 
-No tiene autenticación, sincronización entre dispositivos ni conexión a sistemas externos. No usar con información real. La ubicación y las fotografías de prueba permanecen en el navegador. Una fotografía no prueba por sí sola la presencia en un establecimiento.
+## Estado funcional
 
-## Ejecución
+El acceso y los catálogos están conectados. La programación y las visitas todavía usan datos ficticios guardados en el navegador de cada cuenta; no están sincronizadas entre dispositivos. La conexión a facturas está pendiente. No usar aún para registrar entregas reales.
 
-Servir los archivos con un servidor HTTP y abrir index.html. La geolocalización requiere HTTPS o localhost y autorización del usuario.
+La captura de ubicación requiere autorización del dispositivo. La fotografía documenta la visita y no prueba por sí sola la presencia. El orden sugerido usa distancia en línea recta, sin tráfico ni cálculo vial.
 
-Pruebas: `node --test tests/domain.test.mjs` con Node.js 22 o posterior. No requiere instalar dependencias.
+## Pruebas
 
-GitHub Pages: seleccionar la rama main y la carpeta raíz en Settings → Pages para publicar la demostración.
+`node --test tests/*.test.mjs` con Node.js 22 o posterior. Sin instalación de dependencias.
+
+No guardar credenciales ni datos operativos en este repositorio público.
