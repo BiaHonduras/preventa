@@ -1,3 +1,4 @@
+import {verifiedUser} from './session.mjs?v=20261030-session';
 export const CATALOG_ROLES=new Set(['administrador','coordinador','jefatura_zn','jefatura_zc']);
 export function permissionsFor(profile){
  const shared=profile?.module_only==='preventa';
@@ -7,12 +8,14 @@ export function permissionsFor(profile){
 }
 export async function authenticate(){
  const {supabase}=await import('/control-tiempos/supabase-config.js');
- const {data,error}=await supabase.auth.getUser();
- if(error||!data?.user){location.replace('/intranet/intranet.html');throw Error('Inicia sesión en la Intranet.');}
- if(data.user.app_metadata?.must_change_password){location.replace('/control-tiempos/cambiar-password.html');throw Error('Actualiza tu contraseña para continuar.');}
+ const identity=await verifiedUser(supabase);
+ if(identity.error&&identity.temporary)throw Error('No se pudo conectar para validar tu sesión. Revisa tu conexión y pulsa Reintentar.');
+ if(identity.error||!identity.user){location.replace('/intranet/intranet.html');throw Error('Inicia sesión en la Intranet.');}
+ if(identity.user.app_metadata?.must_change_password){location.replace('/control-tiempos/cambiar-password.html');throw Error('Actualiza tu contraseña para continuar.');}
  const result=await supabase.rpc('bia_profile');
  if(result.error)throw Error('No se pudo validar tu acceso. Regresa a la Intranet e inténtalo de nuevo.');
  const profile=result.data,permissions=permissionsFor(profile);
  if(!permissions.access)throw Error('Tu cuenta no tiene acceso activo a Preventa. Solicita la revisión de permisos al administrador.');
  return {supabase,profile,permissions};
 }
+

@@ -1,12 +1,13 @@
+import {createSessionMonitor} from './session.mjs?v=20261030-session';
 import {createOperations} from './operations.mjs?v=20261030-ops';
 import {createCustomerMap} from './customer-map.mjs?v=20261030-ops';
 import {mergeCustomerSources} from './customer-map-domain.mjs?v=20261030';
 import {createInvoiceSource,applySourceToState} from './invoices.mjs?v=20261030-clientes';
-import {authenticate} from './access.mjs?v=20261029-roles';
+import {authenticate} from './access.mjs?v=20261030-session';
 import {createCatalogs} from './catalogs.mjs?v=20261030-ops';
 import {localDate} from './domain.mjs';
 const $=id=>document.getElementById(id),esc=x=>String(x??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-let authContext;try{authContext=await authenticate()}catch(error){document.getElementById('access-message').textContent=error.message;throw error}
+let authContext;try{authContext=await authenticate()}catch(error){document.getElementById('access-message').textContent=error.message;const retry=document.getElementById('access-retry');retry.hidden=false;retry.onclick=()=>location.reload();throw error}
 const {supabase,profile,permissions}=authContext;
 const day=localDate();const db=await new Promise((resolve,reject)=>{const r=indexedDB.open('bia-preventa-trial-'+profile.id,1);r.onupgradeneeded=()=>r.result.createObjectStore('data');r.onsuccess=()=>resolve(r.result);r.onerror=()=>reject(r.error)});
 function read(){return new Promise((resolve,reject)=>{const r=db.transaction('data').objectStore('data').get('state');r.onsuccess=()=>resolve(r.result);r.onerror=()=>reject(r.error)})}
@@ -48,6 +49,12 @@ document.addEventListener('input',event=>{const el=event.target;if(!['invoice-qu
 document.addEventListener('submit',async event=>{if(event.target.id!=='catalog-record-form')return;event.preventDefault();if(busy)return;busy=true;try{await catalog.save(event.target);await operations.refreshContext();$('dialog').close();render();}catch(error){notice(error.message,true);}finally{busy=false;}});
 $('today').textContent=new Intl.DateTimeFormat('es-HN',{timeZone:'America/Tegucigalpa',dateStyle:'long'}).format(new Date());render();
 customerMap.refresh().then(()=>{if(['clients','map','planning','driver'].includes(view))render();}).catch(error=>{if(view==='map')notice(error.message,true);});
-let checking=false;async function revalidate(){if(checking)return;checking=true;try{const {data,error}=await supabase.auth.getUser();if(error||!data?.user||data.user.id!==profile.id)location.replace('/intranet/intranet.html');else{const result=await supabase.rpc('bia_profile');if(result.error||!result.data?.is_active||!result.data?.applications?.includes('preventa')||result.data.role_code!==profile.role_code||result.data.module_only!==profile.module_only||JSON.stringify(result.data.sedes)!==JSON.stringify(profile.sedes))location.reload();}}finally{checking=false;}}
-supabase.auth.onAuthStateChange(event=>{if(event==='SIGNED_OUT')location.replace('/intranet/intranet.html');});
-document.addEventListener('visibilitychange',()=>{if(!document.hidden)revalidate();});setInterval(revalidate,60000);
+function sessionNotice(message=''){const el=$('session-status');el.hidden=!message;el.textContent=message;}
+function sessionExit(reason){try{sessionStorage.setItem('bia-preventa-session-exit',JSON.stringify({reason,at:new Date().toISOString()}));}catch{}operations.unmount();location.replace('/intranet/intranet.html');}
+const sessionMonitor=createSessionMonitor({supabase,profile,onTemporary:()=>sessionNotice('No se pudo validar la conexión. Se reintentará automáticamente; los cambios necesitan conexión para guardarse.'),onValid:()=>sessionNotice(),onInvalid:sessionExit,onChanged:()=>location.reload(),onPassword:()=>location.replace('/control-tiempos/cambiar-password.html')});
+// Keep auth callbacks synchronous; verification runs outside the auth client's lock.
+supabase.auth.onAuthStateChange(event=>{if(event==='SIGNED_OUT')sessionMonitor.invalidate('signed_out');else if(['SIGNED_IN','TOKEN_REFRESHED','USER_UPDATED'].includes(event))setTimeout(()=>sessionMonitor.check(),0);});
+document.addEventListener('visibilitychange',()=>{if(!document.hidden)sessionMonitor.check();});
+window.addEventListener('online',()=>sessionMonitor.check());
+window.addEventListener('offline',()=>sessionNotice('Sin conexión. Los cambios necesitan conexión para guardarse. Se reintentará al reconectar.'));
+setInterval(()=>{if(!document.hidden)sessionMonitor.check();},60000);
