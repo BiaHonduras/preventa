@@ -63,3 +63,6 @@ export function createCustomerMap({supabase,onRefresh=async()=>{}}){
  }
  return {refresh,html,mount,unmount,get rows(){return points;},get error(){return error;}};
 }
+
+
+export {leaflet as loadMapLibrary};
