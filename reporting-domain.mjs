@@ -1,0 +1,4 @@
+export function percentage(part,total){return Number(total)>0?Math.round(Number(part||0)/Number(total)*1000)/10:null;}
+export function dashboardRates(m={}){return {coverage:percentage(m.unique_visited_customers,m.customers),completion:percentage(m.completed_visits,m.scheduled_visits),deliverySuccess:percentage(m.successful_deliveries,Number(m.successful_deliveries||0)+Number(m.failed_deliveries||0)),timeDelta:Number(m.comparable_journeys)>0?Number(m.comparable_actual_seconds)-Number(m.comparable_expected_seconds):null};}
+export function shiftedDay(day,days){const d=new Date(day+'T12:00:00Z');d.setUTCDate(d.getUTCDate()+days);return d.toISOString().slice(0,10);}
+export function operationalMenu(manage){return manage?['dashboard','overview','history','driver','planning','invoices','map','clients','catalogs']:['driver','planning','invoices'];}
