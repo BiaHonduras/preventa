@@ -33,3 +33,5 @@
 @media(max-width:650px){.report-filters{padding:16px}.report-filters input,.report-filters select,.report-dialog input{font-size:16px}.report-stats strong{font-size:23px}.report-comparison .stat{padding:10px}.report-comparison .stat strong{font-size:21px}}
 
 button[data-report-action=remove]{color:#a32929}.report-dialog [data-report-remove] [type=submit]{background:#a32929;border-color:#a32929}
+
+.report-dialog{max-width:1180px}

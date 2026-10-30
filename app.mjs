@@ -1,4 +1,4 @@
-import {createReporting} from './reporting.mjs?v=20261030-reports';
+import {createReporting} from './reporting.mjs?v=20261030-reports2';
 import {operationalMenu} from './reporting-domain.mjs?v=20261030-reports';
 import {createSessionMonitor} from './session.mjs?v=20261030-session';
 import {createOperations} from './operations.mjs?v=20261030-reports';
