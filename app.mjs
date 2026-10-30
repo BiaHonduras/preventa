@@ -1,14 +1,14 @@
 import {createSessionMonitor} from './session.mjs?v=20261030-session';
-import {createOperations} from './operations.mjs?v=20261030-ui2';
-import {createCustomerMap} from './customer-map.mjs?v=20261030-ui2';
+import {createOperations} from './operations.mjs?v=20261030-selfprep';
+import {createCustomerMap} from './customer-map.mjs?v=20261030-selfprep';
 import {mergeCustomerSources} from './customer-map-domain.mjs?v=20261030';
 import {createInvoiceSource,applySourceToState} from './invoices.mjs?v=20261030-clientes';
-import {authenticate} from './access.mjs?v=20261030-session';
-import {createCatalogs} from './catalogs.mjs?v=20261030-ui2';
+import {authenticate} from './access.mjs?v=20261030-selfprep';
+import {createCatalogs} from './catalogs.mjs?v=20261030-selfprep';
 import {localDate} from './domain.mjs';
 const $=id=>document.getElementById(id),esc=x=>String(x??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 let authContext;try{authContext=await authenticate()}catch(error){document.getElementById('access-message').textContent=error.message;const retry=document.getElementById('access-retry');retry.hidden=false;retry.onclick=()=>location.reload();throw error}
-const {supabase,profile,permissions}=authContext;
+const {supabase,profile,permissions,opsContext}=authContext;
 const day=localDate();const db=await new Promise((resolve,reject)=>{const r=indexedDB.open('bia-preventa-trial-'+profile.id,1);r.onupgradeneeded=()=>r.result.createObjectStore('data');r.onsuccess=()=>resolve(r.result);r.onerror=()=>reject(r.error)});
 function read(){return new Promise((resolve,reject)=>{const r=db.transaction('data').objectStore('data').get('state');r.onsuccess=()=>resolve(r.result);r.onerror=()=>reject(r.error)})}
 async function save(){return new Promise((resolve,reject)=>{const t=db.transaction('data','readwrite');t.objectStore('data').put(state,'state');t.oncomplete=()=>resolve();t.onerror=()=>reject(t.error)})}
@@ -20,8 +20,8 @@ let invoiceSource;
 const customerMap=createCustomerMap({supabase,onRefresh:async()=>{if(invoiceSource)await invoiceSource.refresh()}});
 invoiceSource=createInvoiceSource({supabase,getRoutes:()=>catalog.routes,onChange:async(documents,customers,routes)=>{applySourceToState(state,documents,mergeCustomerSources(customers,customerMap.rows),routes);await save()}});
 try{await invoiceSource.refresh()}catch(error){$('access-message').textContent=error.message;throw error}
-const operations=createOperations({supabase,profile,permissions,getCustomers:()=>customerMap.rows,getInvoices:()=>state.invoices,getRoutes:()=>catalog.routes,repaint:()=>render()});
-function allowedView(next){return next==='catalogs'?permissions.manage:next==='planning'?permissions.plan:next==='overview'?permissions.overview:next==='driver'?permissions.operate:next==='clients'||next==='invoices'||next==='map'}
+const operations=createOperations({supabase,profile,permissions,initialContext:opsContext,getCustomers:()=>customerMap.rows,getInvoices:()=>state.invoices,getRoutes:()=>catalog.routes,repaint:()=>render()});
+function allowedView(next){return next==='catalogs'?permissions.manage:next==='planning'?permissions.plan:next==='overview'?permissions.overview:next==='driver'?permissions.operate:(next==='clients'||next==='map')?permissions.manage:next==='invoices'}
 document.querySelectorAll('[data-view]').forEach(b=>b.hidden=!allowedView(b.dataset.view));
 $('app-shell').hidden=false;$('access-gate').hidden=true;$('session-name').textContent=profile.nombre_corto;$('session-avatar').textContent=profile.nombre_corto.split(/\s+/).slice(0,2).map(x=>x[0]).join('').toUpperCase();
 

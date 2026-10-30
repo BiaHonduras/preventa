@@ -25,3 +25,5 @@
 
 /* Compact application menu. */
 .sidebar nav button{font-size:12px;line-height:1.35;gap:10px}.sidebar nav button span{white-space:nowrap}@media(max-width:700px){.sidebar nav button{font-size:10px;gap:5px}.sidebar nav button span{max-width:none}}
+
+.ops-selection-panel .table-scroll{max-height:280px;overflow:auto}
