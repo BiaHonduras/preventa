@@ -22,3 +22,6 @@
 @media(max-width:1000px){.ops-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.ops-visit-list{grid-template-columns:1fr}}
 @media(max-width:650px){.ops-grid,.ops-dialog .ops-grid{grid-template-columns:1fr;gap:12px}.ops-grid{padding:16px}.ops-map{height:55vh;min-height:340px}.ops-grid input,.ops-grid select,.ops-dialog input,.ops-dialog select,.ops-dialog textarea,.ops-select-toolbar input{font-size:16px}.ops-select-toolbar{padding:16px}.ops-select-toolbar button{flex:1;min-width:140px}.ops-dialog .card-head{gap:12px}.ops-note{padding:12px 16px}.ops-visit .card-head{align-items:start}.ops-grid>div>strong{font-size:23px}}
 
+
+/* Compact application menu. */
+.sidebar nav button{font-size:12px;line-height:1.35;gap:10px}.sidebar nav button span{white-space:nowrap}@media(max-width:700px){.sidebar nav button{font-size:10px;gap:5px}.sidebar nav button span{max-width:none}}
