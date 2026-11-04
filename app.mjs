@@ -1,7 +1,7 @@
 import {createReporting} from './reporting.mjs?v=20261030-reports2';
 import {operationalMenu} from './reporting-domain.mjs?v=20261030-reports';
 import {createSessionMonitor} from './session.mjs?v=20261030-session';
-import {createOperations} from './operations.mjs?v=20261030-reports';
+import {createOperations} from './operations.mjs?v=20261104-flow';
 import {createCustomerMap} from './customer-map.mjs?v=20261030-reports';
 import {mergeCustomerSources} from './customer-map-domain.mjs?v=20261030';
 import {createInvoiceSource,applySourceToState} from './invoices.mjs?v=20261030-clientes';
@@ -62,3 +62,4 @@ document.addEventListener('visibilitychange',()=>{if(!document.hidden)sessionMon
 window.addEventListener('online',()=>sessionMonitor.check());
 window.addEventListener('offline',()=>sessionNotice('Sin conexión. Los cambios necesitan conexión para guardarse. Se reintentará al reconectar.'));
 setInterval(()=>{if(!document.hidden)sessionMonitor.check();},60000);
+

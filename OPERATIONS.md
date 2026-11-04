@@ -15,3 +15,13 @@ Las pausas requieren motivo, con minutos estimados opcionales. Puede atenderse o
 Mapa de supervisión: verde visitados (incluye resultado fallido porque hubo visita), amarillo en atención, rojo pendientes/pausados. Se actualiza cada 15 segundos con la vista abierta. El tiempo real fuera de atención incluye traslados, esperas y otras gestiones; las pausas de distintos clientes pueden solaparse y no se suman como desplazamiento puro.
 
 Pruebas: node --test tests/*.mjs operations.test.mjs. Verificación de roles, transiciones y límites de 48 horas realizada en transacciones revertidas. La captura real debe comprobarse en los teléfonos que se usarán en campo.
+
+
+
+## Flujo vigente desde el 4 de noviembre de 2026
+
+Preventistas: iniciar jornada en sede, seleccionar clientes, calcular recorrido y pulsar Guardar y comenzar recorrido. Motoristas: mismo flujo con facturas sincronizadas de cualquier ruta de SPS; no se requiere un pedido previo ni una antigüedad de 48 horas. Las facturas se relacionan con un punto activo mediante código exacto, pedido vinculado o selección explícita del cliente. No se vinculan por nombre. La asociación manual se conserva en preventa_invoice_points con usuario y fecha.
+
+Iniciar visita captura GPS y registra la llegada. Las coordenadas del punto de preventa_customer_schedule se actualizan únicamente si cambian. Finalizar visita exige resultado, motivo y fotografía del negocio capturada con cámara. La visita permanece abierta si falla el guardado. Debe finalizarse antes de iniciar otra. Las facturas asignadas a jornadas abiertas o ya entregadas no se pueden asignar nuevamente.
+
+Las nuevas funciones conservan la autorización por cuenta, actividad y sede. La evidencia permanece en el bucket privado preventa-visitas.
