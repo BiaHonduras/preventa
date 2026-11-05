@@ -4,7 +4,7 @@ export function permissionsFor(profile,operatorKind=null){
  const shared=profile?.module_only==='preventa';
  const access=!!profile?.is_active&&Array.isArray(profile.applications)&&profile.applications.includes('preventa')&&profile.sedes?.length>0;
  const manage=access&&!shared&&CATALOG_ROLES.has(profile.role_code);
- return {access,shared,manage,plan:manage||(access&&['preventista','motorista'].includes(operatorKind)),operate:access&&profile.role_code!=='consultas',overview:manage};
+ return {access,shared,manage,plan:manage||(access&&['preventista','motorista'].includes(operatorKind)),operate:access&&!manage&&profile.role_code!=='consultas',overview:manage};
 }
 export async function authenticate(){
  const {supabase}=await import('/control-tiempos/supabase-config.js');

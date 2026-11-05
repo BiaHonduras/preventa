@@ -25,3 +25,10 @@ Preventistas: iniciar jornada en sede, seleccionar clientes, calcular recorrido 
 Iniciar visita captura GPS y registra la llegada. Las coordenadas del punto de preventa_customer_schedule se actualizan únicamente si cambian. Finalizar visita exige resultado, motivo y fotografía del negocio capturada con cámara. La visita permanece abierta si falla el guardado. Debe finalizarse antes de iniciar otra. Las facturas asignadas a jornadas abiertas o ya entregadas no se pueden asignar nuevamente.
 
 Las nuevas funciones conservan la autorización por cuenta, actividad y sede. La evidencia permanece en el bucket privado preventa-visitas.
+
+
+## Ajuste de jornadas — 5 de noviembre de 2026
+
+Mi Jornada está disponible para los perfiles operativos y se oculta en Administrador, Coordinador y Jefaturas. La jornada abierta se recupera desde Supabase al recargar y conserva la persona al cambiar entre Preparación y Mi Jornada. Cuando la cuenta compartida tiene varias jornadas abiertas, se recupera la elegida previamente en ese navegador, sin adivinar otra persona.
+
+Ver recorrido carga el mapa y la tabla ordenada. Usar preparación y comenzar recorrido, debajo del mapa, confirma el plan en el servidor y habilita la tabla de atención. Iniciar muestra el cliente, pedidos y productos de sus facturas; exige fotografía y captura GPS automáticamente. Finalizar conserva esa evidencia y exige resultado y motivo. Los clientes finalizados pasan al final de la tabla. Las visitas iniciadas con la versión anterior sin foto permiten tomarla al cerrar para no bloquearlas.

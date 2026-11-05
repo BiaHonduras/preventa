@@ -28,3 +28,6 @@ export function optimizeRoadOrder(matrix){
  }
  return {order:best,cost:bestCost};
 }
+
+export function orderedVisits(visits=[]){const rank=v=>['visited','failed'].includes(v.state)?2:['visiting','paused'].includes(v.state)?0:1;return [...visits].sort((a,b)=>rank(a)-rank(b)||Number(a.seq)-Number(b.seq));}
+export function restoreOpenJourney(journeys,{actor,kind,remembered,current,worker}={}){const open=journeys.filter(j=>!j.ended_at&&!j.deleted_at&&j.actor===actor&&(!kind||j.kind===kind));return open.find(j=>j.id===current)||open.find(j=>j.id===remembered)||open.find(j=>worker&&j.worker_id===worker)||(open.length===1?open[0]:null);}
