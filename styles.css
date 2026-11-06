@@ -35,3 +35,14 @@
 button[data-report-action=remove]{color:#a32929}.report-dialog [data-report-remove] [type=submit]{background:#a32929;border-color:#a32929}
 
 .report-dialog{max-width:1180px}
+
+/* Field actions and responsive client attention */
+button[data-ops-action="start"],button[data-ops-action="arrive"],button[data-ops-action="resume"],button[data-ops-action="bank-start"],button[data-ops-action="apply-plan"]{background:#15803d;color:#fff;border:1px solid #15803d}
+button[data-ops-action="finish"],button[data-ops-action="end"],button[data-ops-action="bank-finish"]{background:#b91c1c;color:#fff;border:1px solid #b91c1c}
+button[data-ops-action="apply-plan"][data-future="true"]{background:#2463dc;border-color:#2463dc}
+button[data-ops-action]:disabled{opacity:.45;cursor:not-allowed}
+.map-link{display:inline-flex;align-items:center;justify-content:center;min-height:42px;white-space:nowrap}.visit-index{display:none}.visit-name strong{overflow-wrap:anywhere}.visit-actions{min-width:110px}.visit-actions button{margin:3px 0}
+@media(max-width:900px){
+ .attention-scroll{overflow:visible}.attention-table,.attention-table tbody{display:block;width:100%;min-width:0}.attention-table thead{display:none}.attention-table tbody{padding:10px;box-sizing:border-box}.attention-table tr{display:grid;grid-template-columns:minmax(0,1fr) 106px;grid-template-areas:"name actions" "state map" "time map";gap:6px 10px;padding:14px 10px;border:1px solid #dce4ee;border-radius:10px;margin-bottom:10px;background:#fff}
+ .attention-table td{display:block;border:0;padding:0;min-width:0;text-align:left;white-space:normal}.attention-table .visit-order{display:none}.attention-table .visit-name{grid-area:name}.attention-table .visit-actions{grid-area:actions;min-width:0;display:flex;flex-direction:column;align-items:stretch;gap:6px}.attention-table .visit-state{grid-area:state;color:#52647c;font-size:12px}.attention-table .visit-time{grid-area:time;font-size:12px;color:#52647c}.attention-table .visit-time:before{content:"Atención: "}.attention-table .visit-map{grid-area:map;align-self:start}.attention-table .visit-index{display:inline}.attention-table .visit-name small{display:block;overflow-wrap:anywhere;word-break:break-word}.attention-table .visit-actions button,.attention-table .map-link{width:100%;box-sizing:border-box;min-height:44px;margin:0;padding:9px 6px;font-size:12px}.attention-table .visit-name strong{font-size:14px}
+}

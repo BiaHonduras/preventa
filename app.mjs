@@ -1,8 +1,10 @@
-import {customerSearchHtml} from './customer-search.mjs?v=20261106';
+import {handleMapLink} from './visit-ui.mjs?v=20261106-mobile';
+document.addEventListener('click',handleMapLink);
+import {customerSearchHtml} from './customer-search.mjs?v=20261106-mobile';
 import {createReporting} from './reporting.mjs?v=20261106';
 import {operationalMenu} from './reporting-domain.mjs?v=20261105-journey';
 import {createSessionMonitor} from './session.mjs?v=20261030-session';
-import {createOperations} from './operations.mjs?v=20261106';
+import {createOperations} from './operations.mjs?v=20261106-mobile';
 import {createCustomerMap} from './customer-map.mjs?v=20261030-reports';
 import {mergeCustomerSources} from './customer-map-domain.mjs?v=20261030';
 import {createInvoiceSource,applySourceToState} from './invoices.mjs?v=20261105-month';
